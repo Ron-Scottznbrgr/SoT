@@ -1,9 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://b1iyc5xodsbx4"]
+[gd_scene load_steps=5 format=3 uid="uid://b1iyc5xodsbx4"]
 
-[ext_resource type="Script" path="res://Scripts/Player.gd" id="1_f6jbq"]
+[ext_resource type="Script" path="res://Prefabs/Player.cs" id="1_hn6fr"]
 [ext_resource type="Texture2D" uid="uid://cl4lkffdhc7pu" path="res://icon.svg" id="1_qpayv"]
-[ext_resource type="SpriteFrames" uid="uid://d2c0h5fv5r2f4" path="res://Art/sprites/spr_red_cheep.tres" id="1_vps0y"]
-[ext_resource type="Script" path="res://Scripts/Fish_Controls.gd" id="3_p83o1"]
+[ext_resource type="PackedScene" uid="uid://bhsm222mq7hq7" path="res://Prefabs/fish.tscn" id="3_brlvl"]
 
 [sub_resource type="GDScript" id="GDScript_sprib"]
 script/source = "extends Label
@@ -19,14 +18,11 @@ func _process(_delta):
 	text = str($\"../Fish_Body\".position)
 "
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_odsel"]
-
 [node name="Node2D" type="Node2D"]
 
 [node name="Player" type="Node2D" parent="."]
 position = Vector2(0, -42)
-script = ExtResource("1_f6jbq")
-Fish_pos = Vector2(500, 30)
+script = ExtResource("1_hn6fr")
 
 [node name="FishPos" type="Label" parent="Player"]
 offset_top = 42.0
@@ -39,23 +35,7 @@ script = SubResource("GDScript_sprib")
 scale = Vector2(0.086, 0.086)
 texture = ExtResource("1_qpayv")
 
-[node name="Fish_Body" type="CharacterBody2D" parent="Player"]
-position = Vector2(0, 81)
-motion_mode = 1
-script = ExtResource("3_p83o1")
-
-[node name="Fish_Mouth" type="Node2D" parent="Player/Fish_Body"]
-position = Vector2(6, 3.001)
-
-[node name="Fish_Sprite" type="AnimatedSprite2D" parent="Player/Fish_Body"]
-texture_filter = 1
-sprite_frames = ExtResource("1_vps0y")
-autoplay = "default"
-frame = 1
-frame_progress = 1.0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Fish_Body"]
-shape = SubResource("CircleShape2D_odsel")
+[node name="Fish_Body" parent="Player" instance=ExtResource("3_brlvl")]
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(6.418, 6.418)

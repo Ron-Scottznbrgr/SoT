@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://bhsm222mq7hq7"]
+
+[ext_resource type="Script" path="res://Prefabs/fish.cs" id="1_53fes"]
+[ext_resource type="SpriteFrames" uid="uid://d2c0h5fv5r2f4" path="res://Art/sprites/spr_red_cheep.tres" id="2_fjjkr"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_odsel"]
+
+[node name="Fish" type="Node2D"]
+scale = Vector2(3, 3)
+script = ExtResource("1_53fes")
+
+[node name="FishBody" type="CharacterBody2D" parent="."]
+
+[node name="FishMouth" type="Node2D" parent="FishBody"]
+position = Vector2(6, 3.001)
+
+[node name="FishSprite" type="AnimatedSprite2D" parent="FishBody"]
+texture_filter = 1
+sprite_frames = ExtResource("2_fjjkr")
+autoplay = "default"
+frame = 1
+frame_progress = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FishBody"]
+shape = SubResource("CircleShape2D_odsel")

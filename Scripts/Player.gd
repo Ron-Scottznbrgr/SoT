@@ -17,11 +17,11 @@ func _draw():
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
-	direction = $"Fish_Body".get_direction()
+	direction = $"Fish_Body".GetDirection()
 	
 	Player_pos=Vector2($"Sprite2D".position.x,$"Sprite2D".position.y)
 	Fish_pos=Vector2($Fish_Body.position.x+5,$Fish_Body.position.y+5)
-	direction = $Fish_Body.get_direction()
+	direction = $Fish_Body.GetDirection()
 	if direction == false:
 			Fish_pos=Vector2($Fish_Body.position.x+6,$Fish_Body.position.y+4.5)
 	else:
