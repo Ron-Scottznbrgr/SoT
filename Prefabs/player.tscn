@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bd1k1jctxtvuc"]
+
+[ext_resource type="Script" path="res://Prefabs/Player.cs" id="1_om44v"]
+
+[node name="Player" type="Node2D"]
+script = ExtResource("1_om44v")

@@ -1,0 +1,25 @@
+[gd_resource type="SpriteFrames" load_steps=4 format=3 uid="uid://yb2n5xk1y6jm"]
+
+[ext_resource type="Texture2D" uid="uid://ci5mmv64i5wmy" path="res://Art/sprites/spr_Fish.png" id="1_renfp"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lba8n"]
+atlas = ExtResource("1_renfp")
+region = Rect2(0, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uq8y0"]
+atlas = ExtResource("1_renfp")
+region = Rect2(16, 16, 16, 16)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lba8n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uq8y0")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]

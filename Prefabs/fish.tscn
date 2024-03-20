@@ -18,8 +18,6 @@ position = Vector2(6, 3.001)
 texture_filter = 1
 sprite_frames = ExtResource("2_fjjkr")
 autoplay = "default"
-frame = 1
-frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FishBody"]
 shape = SubResource("CircleShape2D_odsel")

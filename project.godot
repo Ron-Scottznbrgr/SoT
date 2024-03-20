@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="SoT"
-run/main_scene="res://Prefabs/fish.tscn"
+run/main_scene="res://Prefabs/world.tscn"
 config/features=PackedStringArray("4.1", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 window/size/viewport_width=250
 window/size/viewport_height=250
+window/size/resizable=false
 
 [dotnet]
 
