@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 
 public partial class fish : Node2D
 {
+	private float fishDistance; 	//Distance away from player;
 	private float statSpeed;		//Fish Speed
 	private float statSize;			//Fish Size for Stats
 	private int statRarity;			//Fish Rarity (Changes Sprite)
@@ -52,7 +53,7 @@ public partial class fish : Node2D
 		setUpZoneBoundaries();
 		this.GlobalPosition = Zone1;
 		randZone();
-		
+		fishDistance = windowSize.Size.Y-windowBuffer.Y;	//Setting fish to be Y amount from bottom of screen. Will real him in.
 		statSpeed = randStats(fishMinSpeed, fishMaxSpeed);
 		statSize = randStats(fishMinSize, fishMaxSize);
 		statRarity = randStats(1,fishMaxRarity);
@@ -85,7 +86,7 @@ public partial class fish : Node2D
 		{
 			//GD.Print("X: "+this.GlobalPosition.X);
 			this.GlobalPosition = this.GlobalPosition.MoveToward(targetZone,statSpeed);
-			this.GlobalPosition= new Vector2(this.GlobalPosition.X,(float)(25*Math.Sin(((3.14)/200)*(this.GlobalPosition.X-25))+175));
+			this.GlobalPosition= new Vector2(this.GlobalPosition.X,(float)(25*Math.Sin(((3.14)/200)*(this.GlobalPosition.X-25))+175-fishDistance));
 		}
 
 
@@ -113,7 +114,13 @@ public partial class fish : Node2D
 			//this.GlobalPosition = this.GlobalPosition.MoveToward(Zone2,3.0f);
 			//this.GlobalPosition= new Vector2(this.GlobalPosition.X,(float)(25*Math.Sin(((3.14)/200)*(this.GlobalPosition.X-25))+175));
 		}
-		
+		if (Input.IsActionPressed("rs_up"))
+		{
+			fishDistance-=0.1f;
+			GD.Print("Fishy Distance = "+fishDistance);
+			//this.GlobalPosition = this.GlobalPosition.MoveToward(Zone2,3.0f);
+			//this.GlobalPosition= new Vector2(this.GlobalPosition.X,(float)(25*Math.Sin(((3.14)/200)*(this.GlobalPosition.X-25))+175));
+		}
 	}
 
 	public void moveFish()

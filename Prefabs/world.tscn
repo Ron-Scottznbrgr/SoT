@@ -26,7 +26,6 @@ script = ExtResource("1_e36jc")
 [node name="Environment" type="Node2D" parent="."]
 
 [node name="ColorRect" type="ColorRect" parent="Environment"]
-visible = false
 material = SubResource("ShaderMaterial_k7f5g")
 offset_left = -198.0
 offset_top = -133.0
@@ -40,5 +39,4 @@ color = Color(0.294118, 0.505882, 1, 1)
 
 [node name="BG Music" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("5_v3pg8")
-autoplay = true
 script = ExtResource("6_d25cq")
