@@ -1,8 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://bq7ufretuofje"]
+[gd_scene load_steps=10 format=3 uid="uid://bq7ufretuofje"]
 
 [ext_resource type="Script" path="res://Prefabs/world.cs" id="1_e36jc"]
 [ext_resource type="Shader" path="res://Shaders/water.gdshader" id="1_qwup7"]
 [ext_resource type="PackedScene" uid="uid://bhsm222mq7hq7" path="res://Prefabs/fish.tscn" id="2_ksh71"]
+[ext_resource type="PackedScene" uid="uid://rr1djkmgh6dk" path="res://Prefabs/key.tscn" id="3_q3f55"]
+[ext_resource type="FontFile" uid="uid://bqvchtj4hqsyj" path="res://Art/fonts/Early GameBoy.ttf" id="4_bov3q"]
 [ext_resource type="PackedScene" uid="uid://bd1k1jctxtvuc" path="res://Prefabs/player.tscn" id="4_k0l2w"]
 [ext_resource type="AudioStream" uid="uid://dgouf6uquwx2v" path="res://Art/Music/LoZLA-MiniGame.mp3" id="5_v3pg8"]
 [ext_resource type="Script" path="res://Prefabs/BG_Music.cs" id="6_d25cq"]
@@ -32,6 +34,81 @@ offset_top = -133.0
 offset_right = 652.0
 offset_bottom = 574.0
 color = Color(0.294118, 0.505882, 1, 1)
+
+[node name="Zones" type="Node2D" parent="."]
+
+[node name="Zone0" type="ColorRect" parent="Zones"]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(1, 0.27451, 0.211765, 1)
+
+[node name="Zone1" type="ColorRect" parent="Zones"]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0, 0.956863, 0, 1)
+
+[node name="Zone2" type="ColorRect" parent="Zones"]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(1, 0.345098, 0.278431, 1)
+
+[node name="HUD" type="Node2D" parent="."]
+
+[node name="HUDZone" type="ColorRect" parent="HUD"]
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0, 0, 0, 1)
+
+[node name="LineTension" type="ColorRect" parent="HUD"]
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0.572549, 0, 0, 1)
+
+[node name="LineDistance" type="ColorRect" parent="HUD"]
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0, 0.803922, 0, 1)
+
+[node name="BarsMin" type="ColorRect" parent="HUD"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Bars1-4" type="ColorRect" parent="HUD"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Bars2-4" type="ColorRect" parent="HUD"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Bars3-4" type="ColorRect" parent="HUD"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="BarsMax" type="ColorRect" parent="HUD"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="keyLeft" parent="HUD" instance=ExtResource("3_q3f55")]
+
+[node name="keyUp" parent="HUD" instance=ExtResource("3_q3f55")]
+
+[node name="keyRight" parent="HUD" instance=ExtResource("3_q3f55")]
+
+[node name="lbl_Score" type="Label" parent="HUD"]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("4_bov3q")
+text = "Score:"
+
+[node name="lbl_Points" type="Label" parent="HUD"]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("4_bov3q")
+text = "000000"
 
 [node name="Player" parent="." instance=ExtResource("4_k0l2w")]
 

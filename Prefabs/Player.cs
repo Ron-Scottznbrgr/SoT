@@ -15,7 +15,7 @@ public partial class Player : Node2D
 
 	public override void _Ready()
 	{
-		//World = GetNode<Node2D>("../World");
+		World = GetNode<Node2D>("/root/World");
 		//player = GetNode<Sprite2D>("Sprite2D");
 		//fishBody = GetNode<CharacterBody2D>("Fish_Body");
 		direction = true;
@@ -27,15 +27,25 @@ public partial class Player : Node2D
 
 	public override void _Process(double delta)
 	{
-
-		if (direction == false)
-		{
-			
-		}
-		else 
-		{
+		//rs_left -> Left Arrow Key, or A
+		//rs_up -> Up || Down Arrow Key, or W || S
+		//rs_Right -> Right Arrow Key, or D
 		
+		if (Input.IsActionPressed("rs_left"))
+		{
+			World.Call("GetInput",0);
 		}
+		else if (Input.IsActionPressed("rs_up"))
+		{
+			World.Call("GetInput",1);
+		}
+		else if (Input.IsActionPressed("rs_right"))
+		{
+			World.Call("GetInput",2);
+		}
+
+
+
 		
 		QueueRedraw();
 	}
@@ -47,8 +57,14 @@ public partial class Player : Node2D
 		DrawLine(playerPOS, fishPOS, lineColor, 1.2F, false);
     }
 
-	public void GetFishPos(Vector2 passFish)
+	public void SetFishPos(Vector2 passFish)
 	{
+		//TODO change to the World set fish, not directly link to fish
 		fishPOS = passFish;
 	}
+
+
+
+
+
 }

@@ -5,8 +5,10 @@ using System.Security.Cryptography;
 
 public partial class fish : Node2D
 {
-	private float fishDistance; 	//Distance away from player;
+	private float fishDistance=0f; 	//Distance away from player;
+	private float initFishStart;	//Changes the initial Distance the Fish Starts at
 	private float statSpeed;		//Fish Speed
+	private float pullSpeed=0.1f;		//Fish Speed
 	private float statSize;			//Fish Size for Stats
 	private int statRarity;			//Fish Rarity (Changes Sprite)
 	private float statStamina;		//How long fish will fight
@@ -17,7 +19,7 @@ public partial class fish : Node2D
 	private AnimatedSprite2D fishSprite;	//Fish Srpite
 	private const float fishMinSize=0.75f;	//Size Constraints
 	private const float fishMaxSize=fishMinSize+0.50f;
-	private const float fishMinSpeed=2.75f;	//Speed Constraints
+	private const float fishMinSpeed=3.75f;	//Speed Constraints
 	private const float fishMaxSpeed=fishMinSpeed+3.0f;
 
 	private const float fishMinMoveDelay = 35.0f; //How quickly to change locations.
@@ -31,6 +33,7 @@ public partial class fish : Node2D
 	private Rect2 windowSize;	//Used for window size
 
 	private Vector2 windowBuffer = new Vector2 (35,50);
+	
 	private Vector2 Zone0;
 	private Vector2 Zone1;
 	private Vector2 Zone2;
@@ -53,8 +56,10 @@ public partial class fish : Node2D
 		setUpZoneBoundaries();
 		this.GlobalPosition = Zone1;
 		randZone();
-		fishDistance = windowSize.Size.Y-windowBuffer.Y;	//Setting fish to be Y amount from bottom of screen. Will real him in.
+		fishDistance = 0;	//Setting fish to be Y amount from bottom of screen. Will real him in.
+		initFishStart = (windowSize.Size.Y - windowBuffer.Y) - 25;
 		statSpeed = randStats(fishMinSpeed, fishMaxSpeed);
+		if (statSpeed>=(fishMinSpeed+fishMaxSpeed)/2)pullSpeed=0.15f;
 		statSize = randStats(fishMinSize, fishMaxSize);
 		statRarity = randStats(1,fishMaxRarity);
 
@@ -67,8 +72,8 @@ public partial class fish : Node2D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-		
-		if (Math.Round(this.GlobalPosition.X,3) == targetZone.X)
+		//GD.Print("X: "+this.GlobalPosition.X+"   RX: "+Math.Round(this.GlobalPosition.X,0));
+		if (Math.Round(this.GlobalPosition.X,0) == targetZone.X)
 		{
 			if (fishMoveDelay<=0)
 			{
@@ -80,16 +85,17 @@ public partial class fish : Node2D
 			else
 			{
 				fishMoveDelay-=1;
+				this.GlobalPosition= new Vector2(this.GlobalPosition.X,(float)(25*Math.Sin(((3.14)/200)*(this.GlobalPosition.X-25))+425+fishDistance));
 			}
 		}
 		else
 		{
 			//GD.Print("X: "+this.GlobalPosition.X);
-			this.GlobalPosition = this.GlobalPosition.MoveToward(targetZone,statSpeed);
-			this.GlobalPosition= new Vector2(this.GlobalPosition.X,(float)(25*Math.Sin(((3.14)/200)*(this.GlobalPosition.X-25))+175-fishDistance));
+			this.GlobalPosition = this.GlobalPosition.MoveToward(new Vector2(targetZone.X, this.GlobalPosition.Y),statSpeed);
+			this.GlobalPosition= new Vector2(this.GlobalPosition.X,(float)(25*Math.Sin(((3.14)/200)*(this.GlobalPosition.X-25))+425+fishDistance));
 		}
 
-
+/*
 		if (Input.IsActionPressed("rs_left"))
 		{
 			statSize = randStats(fishMinSize, fishMaxSize);
@@ -116,20 +122,21 @@ public partial class fish : Node2D
 		}
 		if (Input.IsActionPressed("rs_up"))
 		{
-			fishDistance-=0.1f;
-			GD.Print("Fishy Distance = "+fishDistance);
+			fishDistance-=reelSpeed;
+			//GD.Print("Fishy Distance = "+fishDistance);
 			//this.GlobalPosition = this.GlobalPosition.MoveToward(Zone2,3.0f);
 			//this.GlobalPosition= new Vector2(this.GlobalPosition.X,(float)(25*Math.Sin(((3.14)/200)*(this.GlobalPosition.X-25))+175));
 		}
+
+
+	*/	
 	}
 
-	public void moveFish()
-	{
-		//this.GlobalPosition.MoveToward()
-	}
 	
 	public void setUpZoneBoundaries()
 	{
+		//TODO Fix this. We dont care about the ZoneY value. We just want to move towards X
+		//Fixed? Fish needs a target to move to, just moves towards its own Y value and the zoneX. 
 		Zone0 = new Vector2 (windowBuffer.X,windowSize.Size.Y-windowBuffer.Y);
 		Zone1 = new Vector2 (windowSize.Size.X/2,windowSize.Size.Y-windowBuffer.Y);
 		Zone2 = new Vector2 (windowSize.Size.X-windowBuffer.X,windowSize.Size.Y-windowBuffer.Y);
@@ -285,6 +292,27 @@ public partial class fish : Node2D
 		GD.Print("Fish is a "+newStat);
 
 		return newStat;
+	}
+
+	public float GetPullSpeed()
+	{
+		return pullSpeed;
+	}
+
+	public Vector2 SendFishPos ()
+	{
+		return this.GlobalPosition;
+	}
+
+	public void ReelFish(float reelSpeed)
+	{
+		fishDistance=Math.Clamp(fishDistance-= reelSpeed,-400.0f,0.0f);
+	}
+	public void PullAway()
+	{
+		
+		fishDistance=Math.Clamp(fishDistance+= pullSpeed,-400.0f,0.0f);
+		GD.Print("Fish Distance: "+fishDistance);
 	}
 
 }
