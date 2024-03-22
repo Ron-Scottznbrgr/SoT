@@ -1,3 +1,14 @@
+/// <summary>
+/// Author: Ron Scott
+/// Date: March 21 2024
+/// Class Desc: world.cs
+/// This Class handles nearly everything that doesn't involve the player or the Fish.
+/// It handles game logic, and responses to input. 
+/// It updates the HUD, and 
+/// 
+/// </summary>
+/// 
+
 using Godot;
 using System;
 
@@ -11,22 +22,22 @@ public partial class world : Node2D
 
 	private const float lineTensionIncrease=0.05f;//1.5 seems alright. Maybe just 1
 	private const float lineTensionMAX=400.0f;	//distance to Win
-	private const float reelDistanceIncrease=1.4f;
+	private const float reelDistanceIncrease=1.4f;	//Rate at which the fish is reeled in
 	private const float reelDistanceMAX=400.0f;	//distance to Win
-	private float fishPullSpeed=0.1f;
+	private float fishPullSpeed=0.1f;			//rate at which the fish pulls away from you.
 
 	private Rect2 windowSize;	//Used for totalwindow size
 	private Vector2 gameSize;	//Used for game area size
 
 	private Vector2 windowBuffer = new Vector2 (40,50); //Buffer to allow reeling... Y will be used to designate Catch Area
 	private Vector2 HUDSize = new Vector2(0,150);
-	private Vector2 Zone0;
+	private Vector2 Zone0;	//Zones where the player can input and reel in the fish
 	private Vector2 Zone1;
 	private Vector2 Zone2;
-	private ColorRect HUDZone;
-	private ColorRect HUDLineTension;
-	private ColorRect HUDLineDistance;
-	private ColorRect HUDBarMin;
+	private ColorRect HUDZone;		//Zone designated for the HUD
+	private ColorRect HUDLineTension;	//Red Bar	//Fill this up by misinputting and you lose. (well, it will eventually)
+	private ColorRect HUDLineDistance;	//Green Bar	//Fill this up by correctly inputting and you win! (well, not yet)
+	private ColorRect HUDBarMin;		//White lines to help tell the values of the bars
 	private ColorRect HUDBarMax;
 	private ColorRect HUDBarMid1;
 	private ColorRect HUDBarMid2;
@@ -37,7 +48,7 @@ public partial class world : Node2D
 	private ColorRect visualZone1;
 	private ColorRect visualZone2;
 
-	private Label lbl_Score;
+	private Label lbl_Score;		///Score at bottom of HUD. Nonfunctional right now.
 	private Label lbl_Points;
 
 	private Node2D key0,key1,key2;	//Left, Up, Right
@@ -85,16 +96,14 @@ public partial class world : Node2D
 		KeyVisibility();
 		UpdateHUDLines();
 		ReelFishOut();
-		//GD.Print("REELING "+reelDistance);
 	}
 
 
+	//Sends Fish POS to player to draw Fishing Line
 	public void GiveFishPOS(Vector2 fishPos)
 	{		
 		Player.Call("SetFishPos", fishPos);
 	}
-
-
 
 	public void GetInput(int key)
 	{
@@ -140,7 +149,6 @@ public partial class world : Node2D
 		}
 		else if (Fish.GlobalPosition.X>=Zone0.Y)
 		{
-			//GD.Print("KeyZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ: ");
 			key2.Call("IsBlinking", false);
 		}
 
@@ -241,7 +249,7 @@ public partial class world : Node2D
 		HUDLineTension.Size = new Vector2 (((HUDSize.X-10)*tempPercent),10);
 		
 		tempPercent = Math.Clamp(reelDistance/reelDistanceMAX,0.0f,1.0f);
-		GD.Print("REELING "+reelDistance);
+		//GD.Print("REELING "+reelDistance);
 		HUDLineDistance.Size = new Vector2 (((HUDSize.X-10)*tempPercent),10);
 
 	}

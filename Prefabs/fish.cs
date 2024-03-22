@@ -1,7 +1,13 @@
+/// <summary>
+/// Author: Ron Scott
+/// Date: March 21 2024
+/// Class Desc: fish.cs
+/// This Class handles nearly everything related to the Fish
+/// It handles game logic, and randomizing stats, and initializing the Fish itself.
+/// </summary>
 using Godot;
 using System;
 using System.Collections;
-using System.Security.Cryptography;
 
 public partial class fish : Node2D
 {
@@ -31,13 +37,12 @@ public partial class fish : Node2D
 
 
 	private Rect2 windowSize;	//Used for window size
-
-	private Vector2 windowBuffer = new Vector2 (35,50);
+	private Vector2 windowBuffer = new Vector2 (35,50);	//Gives some space on the side of the screen.
 	
-	private Vector2 Zone0;
+	private Vector2 Zone0;		//Zones in which the fish travels too
 	private Vector2 Zone1;
 	private Vector2 Zone2;
-	private Vector2 targetZone;
+	private Vector2 targetZone;	//Zone being targetted by the fish
 
 	
 	
@@ -46,18 +51,17 @@ public partial class fish : Node2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		//fishBody=GetNode<CharacterBody2D>("fishBody");
 		fishSprite= GetNode<AnimatedSprite2D>("FishBody/FishSprite");
 		fishSprite.SpriteFrames.ResourcePath="res://Art/sprites/spr_blue_cheep.tres";
-		//randStats()
 
+		windowSize = GetViewportRect();	//Get window bounds
+		setUpZoneBoundaries();			//Sets up zones based on window
+		this.GlobalPosition = Zone1;	//Set fish to bottom-middle of screen
+		randZone();						//Sets the fish to target a random zone (0 or 2)
+		fishDistance = 0;				//Setting fish to be Y amount from bottom of screen. Changing this value raises or lowers the Fish's Y value
+		
 
-		windowSize = GetViewportRect();
-		setUpZoneBoundaries();
-		this.GlobalPosition = Zone1;
-		randZone();
-		fishDistance = 0;	//Setting fish to be Y amount from bottom of screen. Will real him in.
-		initFishStart = (windowSize.Size.Y - windowBuffer.Y) - 25;
+		//Setting up some random stats for the fish
 		statSpeed = randStats(fishMinSpeed, fishMaxSpeed);
 		if (statSpeed>=(fishMinSpeed+fishMaxSpeed)/2)pullSpeed=0.15f;
 		statSize = randStats(fishMinSize, fishMaxSize);
@@ -72,71 +76,37 @@ public partial class fish : Node2D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-		//GD.Print("X: "+this.GlobalPosition.X+"   RX: "+Math.Round(this.GlobalPosition.X,0));
+
+		//If the fish is in the zone...
 		if (Math.Round(this.GlobalPosition.X,0) == targetZone.X)
 		{
+			//Start waiting until it decides to pick a new zone
 			if (fishMoveDelay<=0)
 			{
-			GD.Print("Zone Reached");
-			fishMoveDelay=randStats(fishMinMoveDelay,fishMaxMoveDelay);
-			GD.Print("Fish Delay = "+ fishMoveDelay);
-			randZone();
+				//Set a random Delay, and pick a new target			
+				fishMoveDelay=randStats(fishMinMoveDelay,fishMaxMoveDelay);
+				randZone();
 			}
 			else
 			{
+				//reduce time... and update Y value as we wait (it takes time to get right in the correct spot, this just makes it smoother updating it here too)
 				fishMoveDelay-=1;
 				this.GlobalPosition= new Vector2(this.GlobalPosition.X,(float)(25*Math.Sin(((3.14)/200)*(this.GlobalPosition.X-25))+425+fishDistance));
 			}
 		}
 		else
 		{
-			//GD.Print("X: "+this.GlobalPosition.X);
+			//Move along the X axis towarsd the target zone...
 			this.GlobalPosition = this.GlobalPosition.MoveToward(new Vector2(targetZone.X, this.GlobalPosition.Y),statSpeed);
+			//Then update the Y position based on the X position and fishDistance. 
 			this.GlobalPosition= new Vector2(this.GlobalPosition.X,(float)(25*Math.Sin(((3.14)/200)*(this.GlobalPosition.X-25))+425+fishDistance));
 		}
-
-/*
-		if (Input.IsActionPressed("rs_left"))
-		{
-			statSize = randStats(fishMinSize, fishMaxSize);
-			ChangeFishScale(statSize);
-			//GD.Print("==============================");
-			
-			//GD.Print("Zone:  "+Zone1.X+" / "+Zone1.Y);
-			//GD.Print("X/Y:   "+this.GlobalPosition.X+" / "+this.GlobalPosition.Y);
-			//GD.Print("Float "+ randStats(fishMinSpeed, fishMaxSpeed));
-			//GD.Print("Int "+ randStats(1, fishMaxRarity));
-
-			//y=25*sin((2π/200)*(x−25))+175
-			
-			//this.GlobalPosition = this.GlobalPosition.MoveToward(Zone0,statSpeed);
-			//this.GlobalPosition= new Vector2(this.GlobalPosition.X,(float)(25*Math.Sin(((3.14)/200)*(this.GlobalPosition.X-25))+175));
-		}
-
-		if (Input.IsActionPressed("rs_right"))
-		{
-			statRarity=randStats(1,fishMaxRarity);
-			ChangeFishGFX(statRarity);
-			//this.GlobalPosition = this.GlobalPosition.MoveToward(Zone2,3.0f);
-			//this.GlobalPosition= new Vector2(this.GlobalPosition.X,(float)(25*Math.Sin(((3.14)/200)*(this.GlobalPosition.X-25))+175));
-		}
-		if (Input.IsActionPressed("rs_up"))
-		{
-			fishDistance-=reelSpeed;
-			//GD.Print("Fishy Distance = "+fishDistance);
-			//this.GlobalPosition = this.GlobalPosition.MoveToward(Zone2,3.0f);
-			//this.GlobalPosition= new Vector2(this.GlobalPosition.X,(float)(25*Math.Sin(((3.14)/200)*(this.GlobalPosition.X-25))+175));
-		}
-
-
-	*/	
 	}
 
 	
 	public void setUpZoneBoundaries()
 	{
-		//TODO Fix this. We dont care about the ZoneY value. We just want to move towards X
-		//Fixed? Fish needs a target to move to, just moves towards its own Y value and the zoneX. 
+		//Sets up the Zones for the fish to travel too. The Y doesn't really matter, we only look after the X
 		Zone0 = new Vector2 (windowBuffer.X,windowSize.Size.Y-windowBuffer.Y);
 		Zone1 = new Vector2 (windowSize.Size.X/2,windowSize.Size.Y-windowBuffer.Y);
 		Zone2 = new Vector2 (windowSize.Size.X-windowBuffer.X,windowSize.Size.Y-windowBuffer.Y);
@@ -149,6 +119,8 @@ public partial class fish : Node2D
 		 */
 	}
 
+	//Find a new zone to travel too, but don't select the one you're already at.
+	//This is also where we flip the fish sprite horizontally back and forth depending on the direction it travels to.
 	public void randZone()
 	{
 		int newZone;
@@ -157,12 +129,9 @@ public partial class fish : Node2D
 		if (targetZone==Zone0)zoneNumber=0;
 		if (targetZone==Zone1)zoneNumber=1;
 		if (targetZone==Zone2)zoneNumber=2;
-
-		GD.Print("Current Target is "+zoneNumber);
 		
 		GD.Randomize();
 		newZone = (int)(GD.Randi() % 2);	// 0 & 1
-		GD.Print("Rolled a: "+newZone);
 		
 		if (zoneNumber==0)
 		{
@@ -172,11 +141,9 @@ public partial class fish : Node2D
 			{
 				case 0:
 				targetZone = Zone1;
-				GD.Print("New Target is Zone1");
 				break;
 				case 1: 
 				targetZone = Zone2;
-				GD.Print("New Target is Zone2");
 				break;
 			}
 		}
@@ -188,12 +155,10 @@ public partial class fish : Node2D
 				case 0:
 				targetZone = Zone0;
 				fishSprite.FlipH=true;
-				GD.Print("New Target is Zone0");
 				break;
 				case 1: 
 				targetZone = Zone2;
 				fishSprite.FlipH=false;
-				GD.Print("New Target is Zone2");
 				break;
 			}
 		}
@@ -205,29 +170,25 @@ public partial class fish : Node2D
 				case 0:
 				targetZone = Zone0;
 				fishSprite.FlipH=true;
-				GD.Print("New Target is Zone0");
 				break;
 				case 1: 
 				targetZone = Zone1;
 				fishSprite.FlipH=true;
-				GD.Print("New Target is Zone1");
 				break;
 			}
 		}
 			
 	}
 
+	//Changes the Fish Sprite based on the rarity when it is initialized.
 	public void ChangeFishGFX(int fishRarity)
 	{
-		
-
 		SpriteFrames newFrames;
 
 		int tempRarity=0;
 
 		tempRarity= randStats(1,100);
-		GD.Print("Fish Random Rarity rolled a: "+tempRarity);
-
+		
 		if (tempRarity>=1 && tempRarity<=30) fishRarity=1;
 		else if (tempRarity>30 && tempRarity<=55) fishRarity=2;
 		else if (tempRarity>55 && tempRarity<=75) fishRarity=3;
@@ -256,25 +217,20 @@ public partial class fish : Node2D
 			default:
 			newFrames = (SpriteFrames)ResourceLoader.Load("res://Art/sprites/spr_red_cheep.tres");
 			break;
-
-
 		}
+		//Just changes the sprite and enables animation.
 		fishSprite.SpriteFrames = newFrames;
 		fishSprite.Animation = "default";
 		fishSprite.Play();
-
 	}
 
+	//Change size of fish based on stats.
 	public void ChangeFishScale(float fishScale)
 	{
 		fishSprite.Scale = new Vector2 (fishScale, fishScale);
 	}
 
-	public void createFish()
-	{
-		statSpeed = randStats(fishMinSpeed,fishMaxSpeed);
-	}
-
+	//Returns a random float value between a Min and Max number.
 	public float randStats(float statRandMin, float statRandMax)
 	{
 		float newStat;
@@ -283,36 +239,40 @@ public partial class fish : Node2D
 
 		return newStat;
 	}
+
+	//Returns a random int value between a Min and Max number.
 	public int randStats(int statRandMin, int statRandMax)
 	{
 		int newStat;
 
 		GD.Randomize();
 		newStat = (int)(GD.Randi() % statRandMax)+statRandMin;
-		GD.Print("Fish is a "+newStat);
 
 		return newStat;
 	}
 
+	//Sends pull speed to the World. This helps sync up the red tension line.
 	public float GetPullSpeed()
 	{
 		return pullSpeed;
 	}
 
+	//Sends fish Pos to the World class. 
 	public Vector2 SendFishPos ()
 	{
 		return this.GlobalPosition;
 	}
 
+	//Bring the fish closer. The World class calls this when the correct input is.. inputted.
 	public void ReelFish(float reelSpeed)
 	{
 		fishDistance=Math.Clamp(fishDistance-= reelSpeed,-400.0f,0.0f);
 	}
+
+	//The opposite of the ReelFish Mehtod. Pushes the fish away based on misinput.
 	public void PullAway()
-	{
-		
+	{		
 		fishDistance=Math.Clamp(fishDistance+= pullSpeed,-400.0f,0.0f);
-		GD.Print("Fish Distance: "+fishDistance);
 	}
 
 }
