@@ -20,11 +20,11 @@ public partial class world : Node2D
 	private float lineTension=0;	//When 100, break line;
 	private float reelDistance=0;	//When X, win game;
 
-	private const float lineTensionIncrease=0.05f;//1.5 seems alright. Maybe just 1
+	private const float lineTensionIncrease=.15f;//0.15 seems alright. Maybe just .1
 	private const float lineTensionMAX=400.0f;	//distance to Win
-	private const float reelDistanceIncrease=1.4f;	//Rate at which the fish is reeled in
+	private const float reelDistanceIncrease=1.0f;	//Rate at which the fish is reeled in
 	private const float reelDistanceMAX=400.0f;	//distance to Win
-	private float fishPullSpeed=0.1f;			//rate at which the fish pulls away from you.
+	private float fishPullSpeed=0.2f;			//rate at which the fish pulls away from you.
 
 	private Rect2 windowSize;	//Used for totalwindow size
 	private Vector2 gameSize;	//Used for game area size
@@ -50,8 +50,19 @@ public partial class world : Node2D
 
 	private Label lbl_Score;		///Score at bottom of HUD. Nonfunctional right now.
 	private Label lbl_Points;
+	private Label lbl_Sadness;
+	private Label lbl_Congrats;
+	private float playerScore=0.0f;
+	private float outputScore=0.0f;
+	private int gameState=1;
+	private int fishWorth; //How much the fish will be worth when caught. 
+	private Node2D fileHandler; //Loads Hi Scores.
+
+
 
 	private Node2D key0,key1,key2;	//Left, Up, Right
+			private AudioStreamPlayer winSFX;
+		private AudioStreamPlayer loseSFX;
 
 
 	private Node2D Player;
@@ -74,8 +85,17 @@ public partial class world : Node2D
 		HUDBarMid2 = GetNode<ColorRect>("HUD/Bars2-4");
 		HUDBarMid3 = GetNode<ColorRect>("HUD/Bars3-4");
 
+		winSFX = GetNode<AudioStreamPlayer>("WinSFX");
+		loseSFX = GetNode<AudioStreamPlayer>("LoseSFX");
+
+
 		lbl_Score = GetNode<Label>("HUD/lbl_Score");
 		lbl_Points = GetNode<Label>("HUD/lbl_Points");
+		lbl_Congrats = GetNode<Label>("HUD/lbl_Congrats");
+		lbl_Sadness = GetNode<Label>("HUD/lbl_Sadness");
+		lbl_Congrats.Visible=false;
+		lbl_Sadness.Visible=false;
+
 		
 
 		key0 = GetNode<Node2D>("HUD/keyLeft");
@@ -84,6 +104,10 @@ public partial class world : Node2D
 
 
 		fishPullSpeed=(float)Fish.Call("GetPullSpeed");
+		fishWorth=(int)Math.Round((float)Fish.Call("GetFishWorth"),0);
+
+		fileHandler = GetNode<Node2D>("FileHandler");
+		
 		SetupReelZones();
 		SetupKeys();
 		
@@ -92,10 +116,63 @@ public partial class world : Node2D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
+		if (gameState==1)
+		{
 		GiveFishPOS(Fish.GlobalPosition);
 		KeyVisibility();
 		UpdateHUDLines();
+		Debug__();
+		CheckWinCon();
 		ReelFishOut();
+		}
+		else if (gameState==2)
+		{
+
+		}
+
+	}
+
+
+	public void Debug__()
+	{
+		lbl_Points.Text=""+lineTension;
+	}
+
+	public void CheckWinCon()
+	{
+		if (reelDistance>=400)
+		{
+			EndGamePhase(true);
+		}
+
+		if (lineTension >= 100)
+		{
+			EndGamePhase(false);
+		}
+	}
+
+	public void EndGamePhase(Boolean win)
+	{
+		gameState=2;
+		key0.QueueFree();
+		key1.QueueFree();
+		key2.QueueFree();
+		//Player.QueueFree();
+		Fish.Call("Stop");
+		UpdateHUDLines();
+
+		if (win)
+		{
+		lbl_Congrats.Visible=true;
+		winSFX.Play();
+		playerScore+=fishWorth;
+		fileHandler.Call("SaveScores",playerScore,(int)Fish.Call("SendFishRarity"));
+		}
+		else
+		{
+		lbl_Sadness.Visible=true;
+		loseSFX.Play();	
+		}
 	}
 
 
@@ -112,32 +189,38 @@ public partial class world : Node2D
 
 		//Press the opposite direction for the zone. 
 		// For Example, If pressing RIGHT (key2), and the Fish is in Zone 0 (LEFT) then reel the fish.
-		if (key==2 && Fish.GlobalPosition.X>=Zone0.X && Fish.GlobalPosition.X<=Zone0.Y) 
+		if (key==2 && Fish.GlobalPosition.X>=Zone0.X && Fish.GlobalPosition.X<=Zone0.Y && gameState ==1) 
 		{
 			ReelFishIn();
 		}
-		else if (key==2 && Fish.GlobalPosition.X>=Zone0.Y)
+		else if (key==2 && Fish.GlobalPosition.X>=Zone0.Y && gameState ==1)
 		{
 			lineTension+=lineTensionIncrease;
 		}
 
-		if (key==1 && Fish.GlobalPosition.X>=Zone1.X && Fish.GlobalPosition.X<=Zone1.Y) 
+		if (key==1 && Fish.GlobalPosition.X>=Zone1.X && Fish.GlobalPosition.X<=Zone1.Y && gameState ==1) 
 		{
 			ReelFishIn();
 		}
-		else if (key==1 && Fish.GlobalPosition.X>=Zone0.Y)
+		else if ((key==1 && Fish.GlobalPosition.X>=Zone0.Y)||((key==1 && Fish.GlobalPosition.X<=Zone2.Y)) && gameState ==1)
 		{
 			lineTension+=lineTensionIncrease;
 		}
 
-		if (key==0 && Fish.GlobalPosition.X>=Zone2.X && Fish.GlobalPosition.X<=Zone2.Y) 
+		if (key==0 && Fish.GlobalPosition.X>=Zone2.X && Fish.GlobalPosition.X<=Zone2.Y && gameState ==1) 
 		{
 			ReelFishIn();			
 		}
-		else if (key==0 && Fish.GlobalPosition.X<=Zone2.X)
+		else if (key==0 && Fish.GlobalPosition.X<=Zone2.X && gameState ==1)
 		{
 			lineTension+=lineTensionIncrease;
 		} 
+
+		if (gameState == 2 && key == 10)
+		{
+			GetTree().ChangeSceneToFile("res://Prefabs/mainMenu.tscn");
+		}
+
 	}
 
 	public void KeyVisibility()
@@ -175,11 +258,15 @@ public partial class world : Node2D
 	{
 		reelDistance=Math.Clamp(reelDistance+=reelDistanceIncrease,0.0f,400.0f);
 		Fish.Call("ReelFish",reelDistanceIncrease);
+		//playerScore+=(int)reelDistanceIncrease;
+		playerScore+=0.5f;
 	}
 	public void ReelFishOut()
 	{
 		Fish.Call("PullAway");
 		reelDistance=Math.Clamp(reelDistance-=fishPullSpeed,0.0f,400.0f);
+		playerScore-=0.1f;
+		
 	}
 
 	public void SetupReelZones()
@@ -251,8 +338,20 @@ public partial class world : Node2D
 		tempPercent = Math.Clamp(reelDistance/reelDistanceMAX,0.0f,1.0f);
 		//GD.Print("REELING "+reelDistance);
 		HUDLineDistance.Size = new Vector2 (((HUDSize.X-10)*tempPercent),10);
+		playerScore=Math.Clamp(playerScore,0.0f,999999.0f);
+		outputScore=(float)Math.Round(playerScore,0);
+		//999,999
 
+		if (outputScore>99999.9f) lbl_Points.Text=""+Math.Round(outputScore,0);
+		else if (outputScore>9999.9f) lbl_Points.Text="0"+Math.Round(outputScore,0);
+		else if (outputScore>999.9f) lbl_Points.Text="00"+Math.Round(outputScore,0);
+		else if (outputScore>99.9f) lbl_Points.Text="000"+Math.Round(outputScore,0);
+		else if (outputScore>9.9f) lbl_Points.Text="0000"+Math.Round(outputScore,0);
+		else if (outputScore>0.9f) lbl_Points.Text="00000"+Math.Round(outputScore,0);
+		else if (outputScore<=0.9f) lbl_Points.Text="00000"+Math.Round(outputScore,0);
+		else lbl_Points.Text="000000"+Math.Round(outputScore,0);
 	}
+
 
 	public void SetupKeys()
 	{

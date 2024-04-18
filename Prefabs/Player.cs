@@ -43,6 +43,11 @@ public partial class Player : Node2D
 		else if (Input.IsActionPressed("rs_right"))
 		{
 			World.Call("GetInput",2);
+		}
+
+		if (Input.IsActionPressed("rs_enter"))
+		{
+			World.Call("GetInput",10);
 		}		
 		QueueRedraw();	//update and redraw the fishing line.
 	}

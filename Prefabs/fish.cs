@@ -44,6 +44,10 @@ public partial class fish : Node2D
 	private Vector2 Zone2;
 	private Vector2 targetZone;	//Zone being targetted by the fish
 
+	private float fishWorth=0;
+	private int[] fishRarityScore;
+	private int fishState=0;
+
 	
 	
 
@@ -52,7 +56,7 @@ public partial class fish : Node2D
 	public override void _Ready()
 	{
 		fishSprite= GetNode<AnimatedSprite2D>("FishBody/FishSprite");
-		fishSprite.SpriteFrames.ResourcePath="res://Art/sprites/spr_blue_cheep.tres";
+//		fishSprite.SpriteFrames.ResourcePath="res://Art/sprites/spr_blue_cheep.tres";
 
 		windowSize = GetViewportRect();	//Get window bounds
 		setUpZoneBoundaries();			//Sets up zones based on window
@@ -67,16 +71,28 @@ public partial class fish : Node2D
 		statSize = randStats(fishMinSize, fishMaxSize);
 		statRarity = randStats(1,fishMaxRarity);
 
-		ChangeFishGFX(statRarity);
+		fishRarityScore= new int[] {0,1000,1200,1350,1450,1600};
+		
+		ChangeFishGFX();
 		ChangeFishScale(statSize);
+		SetFishWorth();
 		
 		fishMoveDelay = fishMaxMoveDelay;
+		fishState=1;
+
+		
+		
+		
+		
+
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
 
+		if (fishState==1)
+		{
 		//If the fish is in the zone...
 		if (Math.Round(this.GlobalPosition.X,0) == targetZone.X)
 		{
@@ -101,9 +117,39 @@ public partial class fish : Node2D
 			//Then update the Y position based on the X position and fishDistance. 
 			this.GlobalPosition= new Vector2(this.GlobalPosition.X,(float)(25*Math.Sin(((3.14)/200)*(this.GlobalPosition.X-25))+425+fishDistance));
 		}
+		}
 	}
 
+	public void SetFishWorth()
+	{	
+
+		fishWorth = fishRarityScore[statRarity];
+		//GD.Print("RARITY WORTH===============: "+fishWorth);
+		//GD.Print("Speed: "+statSpeed);
+		//GD.Print("Speed Mod: "+((statSpeed-2.75f)/1.5f));
+		fishWorth *= ((statSpeed-2.75f)/1.5f);
+		//GD.Print("SPEED WORTH===============: "+fishWorth);
+		
+		//GD.Print("Size: "+statSize);
+		//GD.Print("Size Mod: "+(statSize+0.75f));
+		fishWorth *= (statSize+0.75f);
+		//GD.Print("TOTAL WORTH===============: "+fishWorth);		
+	}
 	
+	public float GetFishWorth()
+	{
+		return fishWorth;
+	}
+
+	public void Stop()
+	{
+		fishState=2;
+		statSpeed=0;
+		pullSpeed=0;
+		statSpeed=0;
+		this.GlobalPosition = new Vector2(Zone1.X,Zone1.Y-300);
+	}
+
 	public void setUpZoneBoundaries()
 	{
 		//Sets up the Zones for the fish to travel too. The Y doesn't really matter, we only look after the X
@@ -181,7 +227,7 @@ public partial class fish : Node2D
 	}
 
 	//Changes the Fish Sprite based on the rarity when it is initialized.
-	public void ChangeFishGFX(int fishRarity)
+	public void ChangeFishGFX()
 	{
 		SpriteFrames newFrames;
 
@@ -189,15 +235,17 @@ public partial class fish : Node2D
 
 		tempRarity= randStats(1,100);
 		
-		if (tempRarity>=1 && tempRarity<=30) fishRarity=1;
-		else if (tempRarity>30 && tempRarity<=55) fishRarity=2;
-		else if (tempRarity>55 && tempRarity<=75) fishRarity=3;
-		else if (tempRarity>75 && tempRarity<=90) fishRarity=4;
-		else if (tempRarity>90 && tempRarity<=100) fishRarity=5;
-		else fishRarity=1;
+		if (tempRarity>=1 && tempRarity<=30) statRarity=1;
+		else if (tempRarity>30 && tempRarity<=55) statRarity=2;
+		else if (tempRarity>55 && tempRarity<=75) statRarity=3;
+		else if (tempRarity>75 && tempRarity<=90) statRarity=4;
+		else if (tempRarity>90 && tempRarity<=100) statRarity=5;
+		else statRarity=1;
+
+		GD.Print("Fish Rarity: "+tempRarity+"//"+statRarity);
 
 
-		switch(fishRarity)
+		switch(statRarity)
 		{
 			case 1:
 		  	newFrames = (SpriteFrames)ResourceLoader.Load("res://Art/sprites/spr_red_cheep.tres");
@@ -261,6 +309,11 @@ public partial class fish : Node2D
 	public Vector2 SendFishPos ()
 	{
 		return this.GlobalPosition;
+	}
+
+	public int SendFishRarity ()
+	{
+		return statRarity;
 	}
 
 	//Bring the fish closer. The World class calls this when the correct input is.. inputted.

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bq7ufretuofje"]
+[gd_scene load_steps=13 format=3 uid="uid://bq7ufretuofje"]
 
 [ext_resource type="Script" path="res://Prefabs/world.cs" id="1_e36jc"]
 [ext_resource type="Shader" path="res://Shaders/water.gdshader" id="1_qwup7"]
@@ -8,6 +8,9 @@
 [ext_resource type="PackedScene" uid="uid://bd1k1jctxtvuc" path="res://Prefabs/player.tscn" id="4_k0l2w"]
 [ext_resource type="AudioStream" uid="uid://dgouf6uquwx2v" path="res://Art/Music/LoZLA-MiniGame.mp3" id="5_v3pg8"]
 [ext_resource type="Script" path="res://Prefabs/BG_Music.cs" id="6_d25cq"]
+[ext_resource type="PackedScene" uid="uid://hq0n7pkrf8yl" path="res://Prefabs/file_handler.tscn" id="7_p8trl"]
+[ext_resource type="AudioStream" uid="uid://db3a6frxdxh0m" path="res://Art/Music/LoZLA-Heart.wav" id="10_rl77e"]
+[ext_resource type="AudioStream" uid="uid://b47brcsbmj4n4" path="res://Art/Music/LoZLA-Die.wav" id="11_a3exr"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_k7f5g"]
 resource_local_to_scene = true
@@ -110,10 +113,64 @@ offset_bottom = 23.0
 theme_override_fonts/font = ExtResource("4_bov3q")
 text = "000000"
 
+[node name="lbl_Congrats" type="Label" parent="HUD"]
+offset_left = 38.0
+offset_top = 54.0
+offset_right = 218.0
+offset_bottom = 218.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("4_bov3q")
+theme_override_font_sizes/font_size = 30
+text = "You
+Caught
+a
+Fish!
+
+
+
+Press
+Enter"
+horizontal_alignment = 1
+
+[node name="lbl_Sadness" type="Label" parent="HUD"]
+offset_left = 38.0
+offset_top = 54.0
+offset_right = 218.0
+offset_bottom = 218.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("4_bov3q")
+theme_override_font_sizes/font_size = 30
+text = "Aww!
+It Got
+Away!
+
+
+
+
+Press
+Enter"
+horizontal_alignment = 1
+
 [node name="Player" parent="." instance=ExtResource("4_k0l2w")]
 
 [node name="Fish" parent="." instance=ExtResource("2_ksh71")]
 
+[node name="FileHandler" parent="." instance=ExtResource("7_p8trl")]
+
 [node name="BG Music" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("5_v3pg8")
 script = ExtResource("6_d25cq")
+
+[node name="WinSFX" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("10_rl77e")
+
+[node name="LoseSFX" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("11_a3exr")

@@ -1,0 +1,153 @@
+[gd_scene load_steps=12 format=3 uid="uid://dh2br2vrpo0lc"]
+
+[ext_resource type="Script" path="res://Prefabs/mainMenu.cs" id="1_ksdcg"]
+[ext_resource type="Shader" path="res://Shaders/water.gdshader" id="2_numue"]
+[ext_resource type="PackedScene" uid="uid://rr1djkmgh6dk" path="res://Prefabs/key.tscn" id="3_1f2c5"]
+[ext_resource type="FontFile" uid="uid://bqvchtj4hqsyj" path="res://Art/fonts/Early GameBoy.ttf" id="4_w8gdn"]
+[ext_resource type="PackedScene" uid="uid://uv8po50gbe68" path="res://Prefabs/score_fish.tscn" id="5_7i443"]
+[ext_resource type="AudioStream" uid="uid://dgouf6uquwx2v" path="res://Art/Music/LoZLA-MiniGame.mp3" id="7_t0yds"]
+[ext_resource type="Script" path="res://Prefabs/BG_Music.cs" id="8_euf8m"]
+[ext_resource type="AudioStream" uid="uid://6k1sjr20kfn" path="res://Art/Music/LoZLA-Item.wav" id="8_syr6s"]
+[ext_resource type="PackedScene" uid="uid://hq0n7pkrf8yl" path="res://Prefabs/file_handler.tscn" id="8_x3b7r"]
+[ext_resource type="Script" path="res://Prefabs/PlayerMainMenu.cs" id="9_34xfr"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k7f5g"]
+resource_local_to_scene = true
+shader = ExtResource("2_numue")
+shader_parameter/R = Vector2(0.8, 0.6)
+shader_parameter/scale = 1.0
+shader_parameter/speed = 0.45
+shader_parameter/direction = Vector3(-1.5, -1.5, -1.5)
+shader_parameter/distortion = 0.005
+shader_parameter/layers = 1.1
+shader_parameter/shades = 0.1
+shader_parameter/steps = 4
+shader_parameter/tint = Vector3(0.459, 0.765, 1)
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_ksdcg")
+
+[node name="Environment" type="Node2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="Environment"]
+material = SubResource("ShaderMaterial_k7f5g")
+offset_left = -198.0
+offset_top = -133.0
+offset_right = 652.0
+offset_bottom = 574.0
+color = Color(0.294118, 0.505882, 1, 1)
+
+[node name="HUD" type="Node2D" parent="."]
+
+[node name="HUDZone" type="ColorRect" parent="HUD"]
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0, 0, 0, 1)
+
+[node name="lbl_Play" type="Label" parent="HUD"]
+offset_left = 79.0
+offset_top = 34.0
+offset_right = 175.0
+offset_bottom = 57.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("4_w8gdn")
+theme_override_font_sizes/font_size = 30
+text = "Play"
+
+[node name="lbl_Quit" type="Label" parent="HUD"]
+offset_left = 79.0
+offset_top = 34.0
+offset_right = 175.0
+offset_bottom = 57.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("4_w8gdn")
+theme_override_font_sizes/font_size = 30
+text = "Quit"
+
+[node name="lbl_Title" type="Label" parent="HUD"]
+offset_left = 79.0
+offset_top = 34.0
+offset_right = 175.0
+offset_bottom = 57.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("4_w8gdn")
+theme_override_font_sizes/font_size = 30
+text = "Ron's
+  Fishy
+    Game"
+
+[node name="TitleFish" parent="HUD" instance=ExtResource("5_7i443")]
+position = Vector2(0, 1)
+
+[node name="keyRight" parent="HUD" instance=ExtResource("3_1f2c5")]
+
+[node name="lbl_HiScores" type="Label" parent="HUD"]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("4_w8gdn")
+text = "Hi Scores:"
+
+[node name="lbl_S1" type="Label" parent="HUD"]
+offset_right = 96.0
+offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("4_w8gdn")
+text = "000000"
+
+[node name="lbl_S2" type="Label" parent="HUD"]
+offset_right = 96.0
+offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("4_w8gdn")
+text = "000000"
+
+[node name="lbl_S3" type="Label" parent="HUD"]
+offset_right = 96.0
+offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("4_w8gdn")
+text = "000000"
+
+[node name="lbl_S4" type="Label" parent="HUD"]
+offset_right = 96.0
+offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("4_w8gdn")
+text = "000000"
+
+[node name="lbl_S5" type="Label" parent="HUD"]
+offset_right = 96.0
+offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("4_w8gdn")
+text = "000000"
+
+[node name="SF_1" parent="HUD" instance=ExtResource("5_7i443")]
+
+[node name="SF_2" parent="HUD" instance=ExtResource("5_7i443")]
+
+[node name="SF_3" parent="HUD" instance=ExtResource("5_7i443")]
+
+[node name="SF_4" parent="HUD" instance=ExtResource("5_7i443")]
+
+[node name="SF_5" parent="HUD" instance=ExtResource("5_7i443")]
+
+[node name="BG Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_t0yds")
+script = ExtResource("8_euf8m")
+
+[node name="MenuSFX" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_syr6s")
+volume_db = 10.0
+
+[node name="FileHandler" parent="." instance=ExtResource("8_x3b7r")]
+
+[node name="Player" type="Node2D" parent="."]
+script = ExtResource("9_34xfr")

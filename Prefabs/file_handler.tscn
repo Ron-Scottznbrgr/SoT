@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://hq0n7pkrf8yl"]
+
+[ext_resource type="Script" path="res://Prefabs/FileHandler.cs" id="1_pkroa"]
+
+[node name="FileHandler" type="Node2D"]
+script = ExtResource("1_pkroa")

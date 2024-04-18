@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://uv8po50gbe68"]
+
+[ext_resource type="SpriteFrames" uid="uid://d2c0h5fv5r2f4" path="res://Art/sprites/spr_red_cheep.tres" id="1_ud0gq"]
+
+[node name="ScoreFish" type="Node2D"]
+
+[node name="FishSprite" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+sprite_frames = ExtResource("1_ud0gq")
+autoplay = "default"

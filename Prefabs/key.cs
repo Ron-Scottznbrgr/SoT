@@ -86,4 +86,6 @@ public partial class key : Node2D
 	{
 		this.GlobalPosition = pos;
 	}
+
+	
 }
