@@ -1,10 +1,16 @@
+/// <summary>
+/// Author: Ron Scott
+/// Date: April 18 2024
+/// Class Desc: mainMenu.cs
+/// This Class handles everything to do with the main menu.
+/// </summary>
 using Godot;
 using System;
 
 
 public partial class mainMenu : Node2D
 {
-	private Node2D key2; //Right arrow flashing indicator
+	private Node2D key2; //Right arrow flashing indicator. using Key2 because it was the "Right arrow" in main game.
 	private Node2D fileHandler; //Loads Hi Scores.
 	
 	private ColorRect HUDZone;		//Zone designated for the HUD
@@ -13,37 +19,34 @@ public partial class mainMenu : Node2D
 	private Vector2 windowBuffer = new Vector2 (40,50); //Buffer to allow reeling... Y will be used to designate Catch Area
 	private Vector2 HUDSize = new Vector2(0,150);
 
-	private Label[] lbl_hiscores;
-	private Label lbl_Play;
-	private Label lbl_Quit;
-	private Label lbl_Title;
-	private Node2D Title_Fish;
+	private Label[] lbl_hiscores;	//Holds all the score data
+	private Label lbl_Play;		//Play Label
+	private Label lbl_Quit;		//Quit Label
+	private Label lbl_Title;	//Title Screen
+	private Node2D Title_Fish;	//Fish Mascot
 	private AnimatedSprite2D TitlefishSprite;	//Fish Srpite
-	private Node2D[] lbl_fish;
+	private Node2D[] lbl_fish;	//Holds all the little Fishy Graphics for the high scores. 
 	private AnimatedSprite2D[] fishSprite;	//Fish Srpite
-	private AudioStreamPlayer menuSFX;
-	private Boolean menuPos=true;
-	// Called when the node enters the scene tree for the first time.
+	private AudioStreamPlayer menuSFX;		//Little "bloop" noise when changing options
+	private Boolean menuPos=true;			//Is play or quit selected. true = play.
+
+
+
 	public override void _Ready()
 	{
-		key2 = GetNode<Node2D>("HUD/keyRight");
-		
-		
+		key2 = GetNode<Node2D>("HUD/keyRight");	//Setting up the Menu Arrow
+			
 		key2.Call("SetPos",new Vector2(50,315));
 		key2.Call("SetSprite",2);
 		key2.Call("Flash");
 		
-		HUDZone = GetNode<ColorRect>("HUD/HUDZone");
+		HUDZone = GetNode<ColorRect>("HUD/HUDZone");	//Setting up High Score area
 
-		fileHandler = GetNode<Node2D>("FileHandler");
-		menuSFX = GetNode<AudioStreamPlayer>("MenuSFX");
+		fileHandler = GetNode<Node2D>("FileHandler");	//Setting up Fire Manager to load scores
+		menuSFX = GetNode<AudioStreamPlayer>("MenuSFX");//Bloop noises.
 
-
-		SetUpLabels();
-
-
-
-		SetUpHUD();
+		SetUpLabels();	//A big gross method full of all the high score/menu texts
+		SetUpHUD();		//PreSets up the Hi score area.
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -56,6 +59,7 @@ public partial class mainMenu : Node2D
 
 	public void SetUpHUD()
 	{
+		//Getting window sizes
 		windowSize = GetViewportRect();
 		gameSize.X = windowSize.Size.X;
 		gameSize.Y = windowSize.Size.Y-HUDSize.Y;
@@ -69,10 +73,14 @@ public partial class mainMenu : Node2D
 
 	public void SetUpLabels()
 	{
+		//Temp holder for Animation frames for fishies
 		SpriteFrames newFrames;
 
+		//Easier to use offsets than to change a bunch of Vector2 Numbers
 		int Yoffset=3;
 		int Xoffset=50;
+
+		//Array of High Scores
 		lbl_hiscores=new Label[]
 		{
 			GetNode<Label>("HUD/lbl_HiScores"),
@@ -83,6 +91,7 @@ public partial class mainMenu : Node2D
 			GetNode<Label>("HUD/lbl_S5")
 		};
 
+		//Array of High Score Fishies
 		lbl_fish=new Node2D[]
 		{
 			GetNode<Node2D>("HUD/SF_1"),
@@ -92,12 +101,14 @@ public partial class mainMenu : Node2D
 			GetNode<Node2D>("HUD/SF_5")			
 		};
 
+		//Placing fishies
 		lbl_fish[0].GlobalPosition=new Vector2 (85,535+Yoffset);
 		lbl_fish[1].GlobalPosition=new Vector2 (85,560+Yoffset);
 		lbl_fish[2].GlobalPosition=new Vector2 (85,585+Yoffset);
 		lbl_fish[3].GlobalPosition=new Vector2 (85,610+Yoffset);
 		lbl_fish[4].GlobalPosition=new Vector2 (85,635+Yoffset);
 
+	//Getting animations for fishies
 		fishSprite = new AnimatedSprite2D[]
 	{
 		GetNode<AnimatedSprite2D>("HUD/SF_1/FishSprite"),
@@ -107,6 +118,7 @@ public partial class mainMenu : Node2D
 		GetNode<AnimatedSprite2D>("HUD/SF_5/FishSprite")
 	};
 
+	//putting high scores in place.
 		lbl_hiscores[0].GlobalPosition = new Vector2(25,500+Yoffset);
 		lbl_hiscores[1].GlobalPosition = new Vector2(50+Xoffset,525+Yoffset);
 		lbl_hiscores[2].GlobalPosition = new Vector2(50+Xoffset,550+Yoffset);
@@ -114,12 +126,14 @@ public partial class mainMenu : Node2D
 		lbl_hiscores[4].GlobalPosition = new Vector2(50+Xoffset,600+Yoffset);
 		lbl_hiscores[5].GlobalPosition = new Vector2(50+Xoffset,625+Yoffset);
 
+	//Actually calling and loading High Scores. The filemanager does this...
 		lbl_hiscores[1].Text=(String)fileHandler.Call("ReturnLine",0);
 		lbl_hiscores[2].Text=(String)fileHandler.Call("ReturnLine",2);
 		lbl_hiscores[3].Text=(String)fileHandler.Call("ReturnLine",4);
 		lbl_hiscores[4].Text=(String)fileHandler.Call("ReturnLine",6);
 		lbl_hiscores[5].Text=(String)fileHandler.Call("ReturnLine",8);
 
+	//Setting up the positions for all the other menu text/images.
 		lbl_Title = GetNode<Label>("HUD/lbl_Title");
 		lbl_Play = GetNode<Label>("HUD/lbl_Play");
 		lbl_Quit = GetNode<Label>("HUD/lbl_Quit");
@@ -135,7 +149,7 @@ public partial class mainMenu : Node2D
 		lbl_Quit.GlobalPosition = new Vector2(100,350);
 		
 
-
+	//Changing the images of the fish based on the high score data.
 	String temp="";
 	int tempCount=0;
 	Boolean visible=true;
@@ -211,6 +225,7 @@ public partial class mainMenu : Node2D
 
 	public void ChangeArrowPos()
 	{
+		//Changes the location of the arrows on the screen when you press up/down
 		menuPos = !menuPos;
 		menuSFX.Play();
 

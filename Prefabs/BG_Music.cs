@@ -1,3 +1,9 @@
+/// <summary>
+/// Author: Ron Scott
+/// Date: April 18 2024
+/// Class Desc: BG_Music.cs
+/// This Class handles music. Just keeps it looping mostly.
+/// </summary>
 using Godot;
 using System;
 
@@ -40,7 +46,7 @@ public partial class BG_Music : AudioStreamPlayer
 		audio.Stream = calmAudio;
 		audio.Play();
 	}
-	public void ManicMusic()
+	public void ManicMusic()//Never used the crazy audio. Was going to, but i like the relaxing music :P
 	{
 		audio.Stop();
 		audio.Stream = manicAudio;

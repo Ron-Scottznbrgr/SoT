@@ -1,18 +1,24 @@
+/// <summary>
+/// Author: Ron Scott
+/// Date: April 18 2024
+/// Class Desc: FileHandler.cs
+/// This Class handles pretty saving and loading the High Scores.
+/// </summary>
 using Godot;
 using System;
 
 public partial class FileHandler : Node2D
 {
-    private string[] hiScores;
-	public int[] hiScoresINT;
-	private int[] hiScoresRarity;
-    private int lineCounter = 0;
+    private string[] hiScores;	//Array of Strings of High Scores
+	public int[] hiScoresINT;	//Array of High Scores after they've been converted to INTs
+	private int[] hiScoresRarity;	//Array of the Fish types caught for the high scores.
+    private int lineCounter = 0;	//Counts the lines while reading/writing files
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        LoadScores();
-		ConvertScoreToInt();        
+        LoadScores();	//Loads the score when this initializes.
+		ConvertScoreToInt();   //Auto converts those scores to INTs
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -26,20 +32,17 @@ public partial class FileHandler : Node2D
 		hiScoresRarity = new int[] {0,0,0,0,0};
 
 		string filePath = "res://Scripts/hiScores.txt";
-
         
+		//Readind data from file... 
         using (var file = FileAccess.Open(filePath, FileAccess.ModeFlags.Read))
-        {
-            
+        {            
             if (file == null)
             {
                 GD.Print("Failed to open file: " + filePath);
                 return;
             }
-
             
             string fileContent = file.GetAsText();
-
             
             file.Close();
 
@@ -59,14 +62,14 @@ public partial class FileHandler : Node2D
         }
 	}
 
-    public String ReturnLine(int line)
+    public String ReturnLine(int line)	//Sends data to world / mainMenu class. 
     {
         //CheckScore(3,1);
 		return hiScores[line];
 		
     }
 
-	public void ConvertScoreToInt()
+	public void ConvertScoreToInt()	//Converts the strings to ints.
 	{
 		int number;
 		int count=0;
@@ -96,7 +99,7 @@ public partial class FileHandler : Node2D
 	}
 
 
-	public void ConvertScoreToString()
+	public void ConvertScoreToString()	//Converts the ints back to strings with leading 0s
 	{
 		for (int i = 0; i<5; i++)
 		{
@@ -113,9 +116,9 @@ public partial class FileHandler : Node2D
 	}
 
 
+	//Write Scores to Files
 	public void SaveScores (int score, int rarity)
 	{
-
 
 	int scoreToInsert = score;
 	int rarityToInsert = rarity;
@@ -137,72 +140,6 @@ public partial class FileHandler : Node2D
         	rarityToInsert = tempRarity;
     	}
 	}	
-
-
-
-		/*
-		int tempScore=0;
-		int tempRarity=0;
-
-		//Score knocks 5th place out.
-		if (score > hiScoresINT[4])
-		{
-			hiScoresINT[4] = score;
-			hiScoresRarity[4] = rarity;
-		}
-
-		//Push 4 to 5
-		if (score > hiScoresINT[3])
-		{
-			tempScore = hiScoresINT[4];
-			tempRarity = hiScoresRarity[4];
-
-			hiScoresINT[3] = score;
-			hiScoresRarity[3] = rarity;
-
-			hiScoresINT[4] = tempScore;
-			hiScoresRarity[4] = tempRarity;
-		}
-
-		//Push 3 to 4
-		if (score > hiScoresINT[2])
-		{
-			tempScore = hiScoresINT[3];
-			tempRarity = hiScoresRarity[3];
-
-			hiScoresINT[2] = score;
-			hiScoresRarity[2] = rarity;
-
-			hiScoresINT[3] = tempScore;
-			hiScoresRarity[3] = tempRarity;
-		}
-
-		//Push 2 to 3
-		if (score > hiScoresINT[1])
-		{
-			tempScore = hiScoresINT[2];
-			tempRarity = hiScoresRarity[2];
-
-			hiScoresINT[1] = score;
-			hiScoresRarity[1] = rarity;
-
-			hiScoresINT[2] = tempScore;
-			hiScoresRarity[2] = tempRarity;
-		}
-
-		//Push 1 to 2
-		if (score > hiScoresINT[0])
-		{
-			tempScore = hiScoresINT[1];
-			tempRarity = hiScoresRarity[1];
-
-			hiScoresINT[0] = score;
-			hiScoresRarity[0] = rarity;
-
-			hiScoresINT[1] = tempScore;
-			hiScoresRarity[1] = tempRarity;
-		}*/
-
 
 		ConvertScoreToString();
 

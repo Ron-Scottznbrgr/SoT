@@ -1,10 +1,10 @@
 /// <summary>
 /// Author: Ron Scott
-/// Date: March 21 2024
+/// Date: April 18 2024
 /// Class Desc: world.cs
 /// This Class handles nearly everything that doesn't involve the player or the Fish.
 /// It handles game logic, and responses to input. 
-/// It updates the HUD, and 
+/// It updates the HUD, and win/lose con, changing scenes, noises, etc.
 /// 
 /// </summary>
 /// 
@@ -20,7 +20,7 @@ public partial class world : Node2D
 	private float lineTension=0;	//When 100, break line;
 	private float reelDistance=0;	//When X, win game;
 
-	private const float lineTensionIncrease=.15f;//0.15 seems alright. Maybe just .1
+	private const float lineTensionIncrease=.25f;//0.25 seems alright. 0.15 is super easy
 	private const float lineTensionMAX=400.0f;	//distance to Win
 	private const float reelDistanceIncrease=1.0f;	//Rate at which the fish is reeled in
 	private const float reelDistanceMAX=400.0f;	//distance to Win
@@ -48,21 +48,21 @@ public partial class world : Node2D
 	private ColorRect visualZone1;
 	private ColorRect visualZone2;
 
-	private Label lbl_Score;		///Score at bottom of HUD. Nonfunctional right now.
-	private Label lbl_Points;
-	private Label lbl_Sadness;
-	private Label lbl_Congrats;
-	private float playerScore=0.0f;
-	private float outputScore=0.0f;
-	private int gameState=1;
+	private Label lbl_Score;	///"Score:" at bottom of HUD.
+	private Label lbl_Points;	//Actual Numberic Score
+	private Label lbl_Sadness;	//Lose Message
+	private Label lbl_Congrats;	//Win Message
+	private float playerScore=0.0f;	//keeps track of the player score
+	private float outputScore=0.0f;	//
+	private int gameState=1;	//Allows the player Left and Right input while catching fish. 
 	private int fishWorth; //How much the fish will be worth when caught. 
 	private Node2D fileHandler; //Loads Hi Scores.
 
 
 
 	private Node2D key0,key1,key2;	//Left, Up, Right
-			private AudioStreamPlayer winSFX;
-		private AudioStreamPlayer loseSFX;
+	private AudioStreamPlayer winSFX;	//Winning Sound
+	private AudioStreamPlayer loseSFX;	//Losing Sound
 
 
 	private Node2D Player;
@@ -96,12 +96,9 @@ public partial class world : Node2D
 		lbl_Congrats.Visible=false;
 		lbl_Sadness.Visible=false;
 
-		
-
 		key0 = GetNode<Node2D>("HUD/keyLeft");
 		key1 = GetNode<Node2D>("HUD/keyUp");
 		key2 = GetNode<Node2D>("HUD/keyRight");
-
 
 		fishPullSpeed=(float)Fish.Call("GetPullSpeed");
 		fishWorth=(int)Math.Round((float)Fish.Call("GetFishWorth"),0);
@@ -121,13 +118,13 @@ public partial class world : Node2D
 		GiveFishPOS(Fish.GlobalPosition);
 		KeyVisibility();
 		UpdateHUDLines();
-		Debug__();
+		//Debug__();
 		CheckWinCon();
 		ReelFishOut();
 		}
 		else if (gameState==2)
 		{
-
+			//Not used. May be implemented Later.
 		}
 
 	}
@@ -135,16 +132,18 @@ public partial class world : Node2D
 
 	public void Debug__()
 	{
-		lbl_Points.Text=""+lineTension;
+		//Just had some debug text being sent to the hi score label. Helps with Scoring and Numbers. Not currently used.
+		//lbl_Points.Text=""+lineTension;
 	}
 
 	public void CheckWinCon()
 	{
+		//If the fish has been reeled 400... you win
 		if (reelDistance>=400)
 		{
 			EndGamePhase(true);
 		}
-
+		//If the line tension reaches 100... you lose.
 		if (lineTension >= 100)
 		{
 			EndGamePhase(false);
@@ -153,6 +152,7 @@ public partial class world : Node2D
 
 	public void EndGamePhase(Boolean win)
 	{
+		//Ends the game... If true is passed, the player wins, if false, they lose.
 		gameState=2;
 		key0.QueueFree();
 		key1.QueueFree();
@@ -166,10 +166,12 @@ public partial class world : Node2D
 		lbl_Congrats.Visible=true;
 		winSFX.Play();
 		playerScore+=fishWorth;
+		UpdateHUDLines();
 		fileHandler.Call("SaveScores",playerScore,(int)Fish.Call("SendFishRarity"));
 		}
 		else
 		{
+		Fish.Visible=false;
 		lbl_Sadness.Visible=true;
 		loseSFX.Play();	
 		}
@@ -225,6 +227,7 @@ public partial class world : Node2D
 
 	public void KeyVisibility()
 	{
+		//Makes the Button Prompts Flash when they need to.
 		if (Fish.GlobalPosition.X>=Zone0.X && Fish.GlobalPosition.X<=Zone0.Y)
 		{
 			
@@ -259,7 +262,7 @@ public partial class world : Node2D
 		reelDistance=Math.Clamp(reelDistance+=reelDistanceIncrease,0.0f,400.0f);
 		Fish.Call("ReelFish",reelDistanceIncrease);
 		//playerScore+=(int)reelDistanceIncrease;
-		playerScore+=0.5f;
+		playerScore+=1.0f;
 	}
 	public void ReelFishOut()
 	{
@@ -271,6 +274,7 @@ public partial class world : Node2D
 
 	public void SetupReelZones()
 	{
+		//This sets up the Zones that the Fish will be reeled in, in. And since we're here, we also do all the HUD measurments and resizing.
 		windowSize = GetViewportRect();
 		gameSize.X = windowSize.Size.X;
 		gameSize.Y = windowSize.Size.Y-HUDSize.Y;
@@ -342,6 +346,7 @@ public partial class world : Node2D
 		outputScore=(float)Math.Round(playerScore,0);
 		//999,999
 
+		//Keeps score looking nice with the leading zeros. There's better ways to do this, but this works.
 		if (outputScore>99999.9f) lbl_Points.Text=""+Math.Round(outputScore,0);
 		else if (outputScore>9999.9f) lbl_Points.Text="0"+Math.Round(outputScore,0);
 		else if (outputScore>999.9f) lbl_Points.Text="00"+Math.Round(outputScore,0);
@@ -355,6 +360,8 @@ public partial class world : Node2D
 
 	public void SetupKeys()
 	{
+
+		//Setting up the Button Prompts.
 		Vector2 iconOffset = new Vector2 (visualZone0.Size.X/2,40);
 
 		key0.Call("SetPos",new Vector2(visualZone2.Position.X+iconOffset.X,HUDLineTension.Position.Y+iconOffset.Y));
